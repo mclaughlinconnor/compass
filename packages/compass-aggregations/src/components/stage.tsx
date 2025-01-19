@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Resizable } from 're-resizable';
 
@@ -126,9 +126,11 @@ export type StageProps = SortableProps & {
   index: number;
   isEnabled: boolean;
   isExpanded: boolean;
+  isFocused: boolean;
   hasSyntaxError: boolean;
   hasServerError: boolean;
   isAutoPreviewing?: boolean | undefined;
+  onFocus: (index: number) => void;
 };
 
 function Stage({
@@ -138,6 +140,8 @@ function Stage({
   hasSyntaxError,
   hasServerError,
   isAutoPreviewing,
+  isFocused,
+  onFocus,
   ...sortableProps
 }: StageProps) {
   const editorRef = useRef<EditorRef>(null);
@@ -154,6 +158,13 @@ function Stage({
     },
     [containerRef, setNodeRef]
   );
+
+  useEffect(() => {
+    if (isFocused && editorRef?.current) {
+      console.log(`isFocused == ${index} true`);
+      editorRef.current.focus();
+    }
+  }, [editorRef, isFocused]);
 
   return (
     <div ref={setContainerRef} style={style}>
@@ -187,6 +198,7 @@ function Stage({
               index={index}
               isAutoPreviewing={isAutoPreviewing}
               editorRef={editorRef}
+              onFocus={onFocus}
             />
             {isAutoPreviewing && (
               <div className={stagePreviewContainerStyles}>

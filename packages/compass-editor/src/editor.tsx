@@ -1051,7 +1051,6 @@ const BaseEditor = React.forwardRef<EditorRef, EditorProps>(function BaseEditor(
          */
         EditorView.domEventHandlers({
           focus(event: FocusEvent) {
-            console.log('The domEventHandlers', event);
             onFocusRef.current?.(
               event as unknown as React.FocusEvent<HTMLDivElement>
             );

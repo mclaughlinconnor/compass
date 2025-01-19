@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Resizable } from 're-resizable';
 import { css, spacing } from '@mongodb-js/compass-components';
+import { Vim } from '@replit/codemirror-vim';
 
 import { SortableList } from './sortable-list';
 import ResizeHandle from '../../resize-handle';
@@ -55,6 +56,22 @@ export const PipelineBuilderUIWorkspace: React.FunctionComponent<
   onStageAddAfterEnd,
   onUseCaseDropped,
 }) => {
+  const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0);
+
+  const moveUp = () => setSelectedTabIndex(Math.max(selectedTabIndex - 1, 0));
+  const moveDown = () =>
+    setSelectedTabIndex(
+      Math.min(selectedTabIndex + 1, stagesIdAndType.length - 1)
+    );
+
+  Vim.unmap('<C-w>', 'normal');
+
+  Vim.defineAction('moveDown', moveDown);
+  Vim.mapCommand('<C-w>j', 'action', 'moveDown', {});
+
+  Vim.defineAction('moveUp', moveUp);
+  Vim.mapCommand('<C-w>k', 'action', 'moveUp', {});
+
   return (
     <PipelineBuilderDndWrapper
       stagesIdAndType={stagesIdAndType}
@@ -70,6 +87,8 @@ export const PipelineBuilderUIWorkspace: React.FunctionComponent<
           <SortableList
             stagesIdAndType={stagesIdAndType}
             onStageAddAfterEnd={onStageAddAfterEnd}
+            onFocus={setSelectedTabIndex}
+            selectedTabIndex={selectedTabIndex}
           />
           <UseCaseDroppableArea index={stagesIdAndType.length - 1} />
           <AddStage variant="button" onAddStage={onStageAddAfterEnd} />

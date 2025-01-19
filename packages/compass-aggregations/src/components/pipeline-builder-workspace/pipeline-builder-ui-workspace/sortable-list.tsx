@@ -27,11 +27,19 @@ export type SortableProps = {
 
 type SortableItemProps = {
   id: number;
+  isFocused: boolean;
   index: number;
+  onFocus: (index: number) => void;
   type: StageIdAndType['type'];
 };
 
-const SortableItem = ({ id, index, type }: SortableItemProps) => {
+const SortableItem = ({
+  id,
+  isFocused,
+  index,
+  onFocus,
+  type,
+}: SortableItemProps) => {
   const { setNodeRef, transform, transition, listeners, isDragging } =
     useSortable({
       id: id + 1,
@@ -65,6 +73,8 @@ const SortableItem = ({ id, index, type }: SortableItemProps) => {
     setNodeRef,
     style,
     listeners,
+    isFocused,
+    onFocus,
   };
 
   return (
@@ -80,12 +90,16 @@ const SortableItem = ({ id, index, type }: SortableItemProps) => {
 
 type SortableListProps = {
   stagesIdAndType: StageIdAndType[];
+  onFocus;
   onStageAddAfterEnd: (after?: number) => void;
+  selectedTabIndex;
 };
 
 export const SortableList = ({
   stagesIdAndType,
+  onFocus,
   onStageAddAfterEnd,
+  selectedTabIndex,
 }: SortableListProps) => {
   // It requires that you pass it a sorted array of the unique identifiers
   // associated with the elements that use the useSortable hook within it.
@@ -105,7 +119,13 @@ export const SortableList = ({
               onAddStage={() => onStageAddAfterEnd(index - 1)}
             />
           </UseCaseDroppableArea>
-          <SortableItem id={id} index={index} type={type} />
+          <SortableItem
+            id={id}
+            index={index}
+            type={type}
+            onFocus={onFocus}
+            isFocused={index === selectedTabIndex}
+          />
         </React.Fragment>
       ))}
     </SortableContext>

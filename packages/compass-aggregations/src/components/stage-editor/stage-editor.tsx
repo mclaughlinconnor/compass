@@ -80,6 +80,7 @@ type StageEditorProps = {
   editor_view_type: 'text' | 'stage' | 'focus';
   className?: string;
   onChange: (index: number, value: string) => void;
+  onFocus: (index: number) => void;
   editorRef?: React.Ref<EditorRef>;
 };
 
@@ -89,6 +90,7 @@ export const StageEditor = ({
   stageOperator,
   index,
   onChange,
+  onFocus,
   serverError,
   syntaxError,
   className,
@@ -176,6 +178,7 @@ export const StageEditor = ({
           onChangeText={(value: string) => {
             onChange(index, value);
           }}
+          onFocus={() => onFocus(index)}
           className={codeEditorStyles}
           id={`aggregations-stage-editor-${index}`}
           completer={completer}
