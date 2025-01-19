@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import type { StageIdAndType } from '../../../modules/pipeline-builder/stage-editor';
 import { css } from '@mongodb-js/compass-components';
 import {
@@ -8,6 +8,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS as cssDndKit } from '@dnd-kit/utilities';
 import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
+import { Vim } from '@replit/codemirror-vim';
 
 import Stage from '../../stage';
 import Wizard from '../../stage-wizard';
@@ -90,14 +91,14 @@ const SortableItem = ({
 
 type SortableListProps = {
   stagesIdAndType: StageIdAndType[];
-  onFocus;
+  setSelectedTabIndex: (index: number) => void;
   onStageAddAfterEnd: (after?: number) => void;
   selectedTabIndex;
 };
 
 export const SortableList = ({
   stagesIdAndType,
-  onFocus,
+  setSelectedTabIndex,
   onStageAddAfterEnd,
   selectedTabIndex,
 }: SortableListProps) => {
@@ -107,6 +108,18 @@ export const SortableList = ({
   // It's important that the items prop passed to SortableContext
   // be sorted in the same order in which the items are rendered.
   const items = stagesIdAndType.map(({ id }) => id + 1);
+
+  Vim.defineAction('newPrevStage', () => {
+    onStageAddAfterEnd(selectedTabIndex - 1);
+    setSelectedTabIndex(selectedTabIndex);
+  });
+  Vim.mapCommand('<C-w>p', 'action', 'newPrevStage', {});
+
+  Vim.defineAction('newNextStage', () => {
+    onStageAddAfterEnd(selectedTabIndex);
+    setSelectedTabIndex(selectedTabIndex + 1);
+  });
+  Vim.mapCommand('<C-w>n', 'action', 'newNextStage', {});
 
   return (
     <SortableContext items={items} strategy={verticalListSortingStrategy}>
@@ -123,7 +136,7 @@ export const SortableList = ({
             id={id}
             index={index}
             type={type}
-            onFocus={onFocus}
+            onFocus={setSelectedTabIndex}
             isFocused={index === selectedTabIndex}
           />
         </React.Fragment>

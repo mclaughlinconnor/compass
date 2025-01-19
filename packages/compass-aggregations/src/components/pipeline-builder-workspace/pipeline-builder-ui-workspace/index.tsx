@@ -88,6 +88,7 @@ export const PipelineBuilderUIWorkspace: React.FunctionComponent<
             stagesIdAndType={stagesIdAndType}
             onStageAddAfterEnd={onStageAddAfterEnd}
             onFocus={setSelectedTabIndex}
+            setSelectedTabIndex={setSelectedTabIndex}
             selectedTabIndex={selectedTabIndex}
           />
           <UseCaseDroppableArea index={stagesIdAndType.length - 1} />
