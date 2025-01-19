@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { withPreferences } from 'compass-preferences-model/provider';
 import { connect } from 'react-redux';
 
@@ -52,6 +52,7 @@ type StageOperatorSelectProps = {
     env: ServerEnvironment[];
     description: string;
   }[];
+  ref: React.Ref<ComboBox>;
 };
 
 // exported for tests
@@ -61,6 +62,8 @@ export const StageOperatorSelect = ({
   selectedStage,
   isDisabled,
   stages,
+  setToFocusStageComboBox,
+  toFocusStageComboBox,
 }: StageOperatorSelectProps) => {
   const onStageOperatorSelected = useCallback(
     (name: string | null) => {
@@ -68,28 +71,43 @@ export const StageOperatorSelect = ({
     },
     [onChange, index]
   );
+
+  const ariaLabel = 'Select a stage operator';
+
+  const stageRef = useRef(null);
+  useEffect(() => {
+    if (toFocusStageComboBox && stageRef?.current) {
+      stageRef.current
+        .querySelector(`input[aria-label="${ariaLabel}"]`)
+        .focus();
+    }
+    setToFocusStageComboBox(false);
+  }, [stageRef, toFocusStageComboBox]);
+
   return (
-    <Combobox
-      value={selectedStage}
-      disabled={isDisabled}
-      aria-label="Select a stage operator"
-      onChange={onStageOperatorSelected}
-      size="default"
-      clearable={false}
-      data-testid="stage-operator-combobox"
-      className={comboboxStyles}
-    >
-      {stages.map((stage, index) => (
-        <ComboboxOption
-          data-testid={`combobox-option-stage-${stage.name}`}
-          key={`combobox-option-stage-${index}`}
-          value={stage.name}
-          description={
-            (isAtlasOnly(stage.env) ? 'Atlas only. ' : '') + stage.description
-          }
-        />
-      ))}
-    </Combobox>
+    <div ref={stageRef}>
+      <Combobox
+        value={selectedStage}
+        disabled={isDisabled}
+        aria-label={ariaLabel}
+        onChange={onStageOperatorSelected}
+        size="default"
+        clearable={false}
+        data-testid="stage-operator-combobox"
+        className={comboboxStyles}
+      >
+        {stages.map((stage, index) => (
+          <ComboboxOption
+            data-testid={`combobox-option-stage-${stage.name}`}
+            key={`combobox-option-stage-${index}`}
+            value={stage.name}
+            description={
+              (isAtlasOnly(stage.env) ? 'Atlas only. ' : '') + stage.description
+            }
+          />
+        ))}
+      </Combobox>
+    </div>
   );
 };
 

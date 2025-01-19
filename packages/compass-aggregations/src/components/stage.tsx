@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Resizable } from 're-resizable';
+import { Vim } from '@replit/codemirror-vim';
 
 import {
   KeylineCard,
@@ -146,6 +147,13 @@ function Stage({
 }: StageProps) {
   const editorRef = useRef<EditorRef>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [toFocusStageComboBox, setToFocusStageComboBox] =
+    useState<boolean>(false);
+
+  Vim.defineAction('focusStage', () => {
+    return setToFocusStageComboBox(true);
+  });
+  Vim.mapCommand('<C-w>y', 'action', 'focusStage', {});
 
   const opacity = isEnabled ? 1 : DEFAULT_OPACITY;
 
@@ -161,13 +169,13 @@ function Stage({
 
   useEffect(() => {
     if (isFocused && editorRef?.current) {
-      console.log(`isFocused == ${index} true`);
       editorRef.current.focus();
     }
   }, [editorRef, isFocused]);
 
   return (
     <div ref={setContainerRef} style={style}>
+      <span> {toFocusStageComboBox} </span>
       <KeylineCard
         data-testid="stage-card"
         data-stage-index={index}
@@ -190,6 +198,8 @@ function Stage({
               });
             }}
             index={index}
+            toFocusStageComboBox={toFocusStageComboBox}
+            setToFocusStageComboBox={setToFocusStageComboBox}
           />
         </div>
         {isExpanded && (

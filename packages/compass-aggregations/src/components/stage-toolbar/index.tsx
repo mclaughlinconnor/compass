@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { connect } from 'react-redux';
 import {
   Icon,
@@ -122,6 +122,8 @@ export function StageToolbar({
   onCreateSearchIndex,
   onOpenFocusMode,
   onStageOperatorChange,
+  setToFocusStageComboBox,
+  toFocusStageComboBox,
 }: StageToolbarProps) {
   const showInsights = usePreference('showInsights');
   const darkMode = useDarkMode();
@@ -152,7 +154,12 @@ export function StageToolbar({
         <div className={shortSpacedStyles}>
           <StageCollapser index={index} />
           <Body weight="medium">Stage {stage.idxInPipeline + 1}</Body>
-          <StageOperatorSelect onChange={onStageOperatorChange} index={index} />
+          <StageOperatorSelect
+            onChange={onStageOperatorChange}
+            index={index}
+            setToFocusStageComboBox={setToFocusStageComboBox}
+            toFocusStageComboBox={toFocusStageComboBox}
+          />
         </div>
         <ToggleStage index={index} />
         {showInsights && insight && <SignalPopover signals={insight} />}
